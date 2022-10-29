@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand-sm bg-light navbar-light">
+    <div class="container-fluid">
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">BÁN HÀNG TRỰC TUYẾN</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/">Trang chủ</a>
+            </li>
+            {% for c in cate%}
+            <li class="nav-item">
+                <a class="nav-link" href="?category_id={{c.id}}">{{ c.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        <form class="d-flex">
+            <input class="form-control me-2" name="keyword" type="text" placeholder="Search">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+    </div>
+</nav>

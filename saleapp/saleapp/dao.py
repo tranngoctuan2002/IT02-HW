@@ -1,15 +1,17 @@
-import json
-from saleapp import app
+from saleapp.models import Category, Product
 
-def load_json():
-    with open(f'{app.root_path}/data/categories.json', encoding='utf-8') as f:
-        return json.load(f)
+def load_category():
+    return Category.query.all()
 
-def load_products(categori_id = None):
-    with open(f'{app.root_path}/data/products.json', encoding='utf-8') as f:
-        products = json.load(f)
+def load_products(category_id = None, kw = None):
+    query = Product.query.filter(Product.active)
 
-    if categori_id:
-        products = [p for p in products if p['category_id'] == int(categori_id)]
+    if category_id:
+        query = query.filter(Product.category_id.__eq__(category_id))
+    if kw:
+        query = query.filter(Product.name.contains(kw))
 
-    return products
+    return query.all()
+
+def load_product_by_id(prodcut_id = None):
+    return Product.query.get(prodcut_id)
