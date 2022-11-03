@@ -19,8 +19,8 @@ def load_product_by_id(prodcut_id = None):
     return Product.query.get(prodcut_id)
 
 def user_authetic(username, password):
-    password = str(hashlib.md5(password.strip().uncode('utf-8')).hexdigest())
-    return User.query.filter(User.username.__eq__(username.strip()), User.password.__eq__(password))
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    return User.query.filter(User.username.__eq__(username.strip()), User.password.__eq__(password)).first()
 
 def load_user_by_id(user_id):
     return User.query.get(user_id)

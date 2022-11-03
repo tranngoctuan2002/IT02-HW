@@ -12,18 +12,18 @@ def prodcut_deltail(product_id):
     pd = dao.load_product_by_id(product_id)
     return render_template("detail.html", product=pd)
 
-@app.route("/admin", methods=['post'])
-def login_admin(username, password):
+@app.route("/login-admin", methods=['post'])
+def login_admin():
     username = request.form['username']
     password = request.form['password']
 
-    user = dao.user_authetic(username=username,password=password)
+    user = dao.user_authetic(username=username, password=password)
     if user:
         login_user(user=user)
 
     return redirect('/admin')
 
-@login.user_loader()
+@login.user_loader
 def load_user(user_id):
     return dao.load_user_by_id(user_id=user_id)
 
