@@ -1,4 +1,6 @@
-from saleapp.models import Category, Product
+import hashlib
+from saleapp.models import Category, Product, User
+
 
 def load_category():
     return Category.query.all()
@@ -15,3 +17,10 @@ def load_products(category_id = None, kw = None):
 
 def load_product_by_id(prodcut_id = None):
     return Product.query.get(prodcut_id)
+
+def user_authetic(username, password):
+    password = str(hashlib.md5(password.strip().uncode('utf-8')).hexdigest())
+    return User.query.filter(User.username.__eq__(username.strip()), User.password.__eq__(password))
+
+def load_user_by_id(user_id):
+    return User.query.get(user_id)

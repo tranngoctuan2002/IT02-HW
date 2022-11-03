@@ -1,0 +1,17 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<h1 class="text-center text-success">TRANG CHỦ QUẢN TRỊ</h1>
+<form method="post" action="/action_page.php">
+  <div class="mb-3 mt-3">
+    <label for="user" class="form-label">Tên đăng nhập:</label>
+    <input type="email" class="form-control" id="user" placeholder="Nhập tài khoản:" name="username">
+  </div>
+  <div class="mb-3">
+    <label for="pwd" class="form-label">Mật khẩu:</label>
+    <input type="password" class="form-control" id="pwd" placeholder="Nhập mật khẩu" name="password">
+  </div>
+  <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+{% endblock %}
