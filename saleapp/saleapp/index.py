@@ -1,7 +1,8 @@
 import cloudinary.uploader
 from flask import render_template, request, redirect
 from saleapp import app, dao, admin, login
-from flask_login import login_user
+from flask_login import login_user, logout_user
+from saleapp.decorators import anonymous_user
 @app.route("/")
 def index():
     products = dao.load_products(category_id= request.args.get('category_id'), kw=request.args.get('keyword'))
@@ -23,8 +24,16 @@ def login_admin():
 
     return redirect('/admin')
 
-@app.route('/login')
+@app.route('/login', methods=['get', 'post'])
+@anonymous_user
 def login_my_user():
+    if request.method.__eq__("POST"):
+        username = request.form['username']
+        password = request.form['password']
+        user = dao.user_authetic(username=username, password=password)
+        if user:
+            login_user(user=user)
+            return redirect('/')
 
     return render_template("login.html")
 
@@ -36,14 +45,28 @@ def register():
         confirm = request.form['confirm']
 
         if password.__eq__(confirm):
-            avatar = ''
+            avatar = '...'
             if request.files:
                 res = cloudinary.uploader.upload(request.files['avatar'])
                 avatar = res['secure_url']
+
+                try:
+                    dao.register(name=request.form['name'],
+                                 username=request.form['username'],
+                                 password=password,
+                                 avatar=avatar)
+                    return redirect('/login')
+                except:
+                    err_msg = "Lỗi rồi bới làng nước ơi!!!"
         else:
             err_msg = 'Mật khẩu không khớp!!'
 
     return render_template('register.html', err_msg=err_msg)
+
+@app.route('/logout')
+def logout_my_user():
+    logout_user()
+    return redirect('/login')
 
 @login.user_loader
 def load_user(user_id):

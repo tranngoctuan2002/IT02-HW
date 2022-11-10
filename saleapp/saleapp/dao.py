@@ -1,5 +1,6 @@
 import hashlib
 from saleapp.models import Category, Product, User
+from saleapp import db
 
 
 def load_category():
@@ -24,3 +25,9 @@ def user_authetic(username, password):
 
 def load_user_by_id(user_id):
     return User.query.get(user_id)
+
+def register(name, username, password, avatar):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    u = User(name=name,username=username,password=password,avatar=avatar)
+    db.session.add(u)
+    db.session.commit()

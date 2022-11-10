@@ -2,4 +2,17 @@
 
 {% block content%}
 <h1 class="text-center text-success">Đăng Nhập</h1>
+<form method="post" enctype="multipart/form-data" action="/login">
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" id="username" required placeholder="Nhập tài khoản" name="username">
+        <label for="username">Tài khoản</label>
+    </div>
+    <div class="form-floating mt-3 mb-3">
+        <input type="password" class="form-control" id="password" required placeholder="Nhập mật khẩu" name="password">
+        <label for="password">Mật khẩu</label>
+    </div>
+    <div class="form-floating mt-3 mb-3">
+        <input type="submit" class="btn btn-primary" value="Đăng ký"/>
+    </div>
+</form>
 {% endblock%}
