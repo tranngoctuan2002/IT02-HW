@@ -4,8 +4,21 @@ from flask import redirect
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_login import logout_user, current_user
+from wtforms import TextAreaField
+from wtforms.widgets import TextArea
 
 admin = Admin(app=app, name='Quản trị cơ sở dữ liệu', template_mode='Bootstrap4')
+
+class CKTextAreaWidget(TextArea):
+    def __call__(self, field, **kwargs):
+        if kwargs.get('class'):
+            kwargs['class'] += ' ckeditor'
+        else:
+            kwargs.setdefault('class', 'ckeditor')
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+class CKTextAreaField(TextAreaField):
+    widget = CKTextAreaWidget()
 
 class AuthenticatedModelView(ModelView):
     def is_accessible(self):
@@ -14,6 +27,7 @@ class AuthenticatedModelView(ModelView):
 class AuthenticatedView(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated
+
 class ProductView(AuthenticatedModelView):
     column_searchable_list = ['name']
     column_filters = ['name', 'price']
@@ -26,6 +40,11 @@ class ProductView(AuthenticatedModelView):
         'description': 'Mô tả',
         'price': 'Giá'
     }
+    extra_js = ['//cdn.ckeditor.com/4.6.0/standard/ckeditor.js']
+    form_overrides = {
+        'description': CKTextAreaField
+    }
+    page_size = 4
 
 class StatsView(AuthenticatedView):
     @expose('/')
