@@ -31,10 +31,16 @@
                 <a class="nav-link text-danger" href="/register">Đăng ký</a>
             </li>
             {% endif %}
+            <li class="nav-item">
+                <a class="nav-link text-primary" href="/cart">Giỏ hàng <span class="badge bg-danger cart-counter">{{cart.total_quantity}}</span></a>
+            </li>
         </ul>
+
         <form class="d-flex">
             <input class="form-control me-2" name="keyword" type="text" placeholder="Search">
             <button class="btn btn-primary" type="submit">Search</button>
+
         </form>
+
     </div>
 </nav>

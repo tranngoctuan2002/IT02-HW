@@ -1,8 +1,9 @@
 import cloudinary.uploader
-from flask import render_template, request, redirect
-from saleapp import app, dao, admin, login
+from flask import render_template, request, redirect, session, jsonify
+from saleapp import app, dao, admin, login, utils
 from flask_login import login_user, logout_user
 from saleapp.decorators import anonymous_user
+
 @app.route("/")
 def index():
     products = dao.load_products(category_id= request.args.get('category_id'), kw=request.args.get('keyword'))
@@ -76,8 +77,76 @@ def load_user(user_id):
 def commit_attr():
     categories = dao.load_category()
     return {
-        'cate': categories
+        'cate': categories,
+        'cart': utils.cart_stats(session.get(app.config['CART_KEY']))
     }
+
+@app.route('/cart')
+def cart():
+    # session['cart'] = {
+    #     "1": {
+    #         "id": "1",
+    #         "name": "iPhone 13",
+    #         "price": 12000,
+    #         "quantity": 2
+    #     },
+    #     "2": {
+    #         "id": "2",
+    #         "name": "iPhone 14",
+    #         "price": 15000,
+    #         "quantity": 1
+    #     }
+    # }
+    return render_template('cart.html')
+
+@app.route('/api/cart', methods=['post'])
+def add_to_cart():
+    data = request.json
+
+    key = app.config['CART_KEY']
+    cart = session.get(key, {})
+
+    id = str(data['id'])
+    name = data['name']
+    price = data['price']
+
+    if id in cart:
+        cart[id]['quantity'] += 1
+    else:
+        cart[id] = {
+            "id": id,
+            "name": name,
+            "price": price,
+            "quantity": 1
+        }
+
+    session[key] = cart
+
+    return jsonify(utils.cart_stats(cart))
+
+@app.route('/api/cart/<product_id>', methods=['put'])
+def updateCart(product_id):
+    key = app.config['CART_KEY']
+    cart = session.get(key, {})
+
+    if cart and product_id in cart:
+        cart[product_id]['quantity'] = int(request.json['quantity'])
+
+    session[key] = cart
+
+    return jsonify(utils.cart_stats(cart))
+
+@app.route('/api/cart/<product_id>', methods=['delete'])
+def delete_cart(product_id):
+    key = app.config['CART_KEY']
+    cart = session.get(key)
+
+    if cart and product_id in cart:
+        del cart[product_id]
+
+    session[key] = cart
+
+    return jsonify(utils.cart_stats(cart))
 
 if __name__ == '__main__':
     app.run(debug=True)
