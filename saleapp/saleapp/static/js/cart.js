@@ -55,3 +55,12 @@ function deleteCart(product_id){
         c.style.display = "none"
     })
 }
+
+function pay() {
+    if( confirm("Ban co chac chan thanh toan khong?") == true){
+        fetch("/api/pay").then(res => res.json()).then(data => {
+                if(data.status === 200)
+                    location.reload()
+            })
+    }
+}

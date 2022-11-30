@@ -1,7 +1,7 @@
 import cloudinary.uploader
 from flask import render_template, request, redirect, session, jsonify
 from saleapp import app, dao, admin, login, utils
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required
 from saleapp.decorators import anonymous_user
 
 @app.route("/")
@@ -147,6 +147,19 @@ def delete_cart(product_id):
     session[key] = cart
 
     return jsonify(utils.cart_stats(cart))
+
+@app.route('/api/pay')
+@login_required
+def pay():
+    key = app.config['CART_KEY']
+    cart = session.get(key)
+
+    if cart and dao.save_receipt(cart):
+        del session[key]
+    else:
+        return jsonify({'status': 500})
+
+    return jsonify({'status': 200})
 
 if __name__ == '__main__':
     app.run(debug=True)

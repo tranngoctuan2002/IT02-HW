@@ -1,6 +1,7 @@
 import hashlib
-from saleapp.models import Category, Product, User
+from saleapp.models import Category, Product, User, Receipt, ReceiptDetails
 from saleapp import db
+from flask_login import current_user
 
 
 def load_category():
@@ -31,3 +32,19 @@ def register(name, username, password, avatar):
     u = User(name=name,username=username,password=password,avatar=avatar)
     db.session.add(u)
     db.session.commit()
+
+def save_receipt(cart):
+    if cart:
+        r = Receipt(user=current_user)
+        db.session.add(r)
+
+        for c in cart.values():
+            d = ReceiptDetails(quantity=c['quantity'], price=c['price'], receipt=r, product_id=c['id'])
+            db.session.add(d)
+
+        try:
+            db.session.commit()
+        except:
+            return False
+        else:
+            return True
