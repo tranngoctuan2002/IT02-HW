@@ -2,6 +2,7 @@ import hashlib
 from saleapp.models import Category, Product, User, Receipt, ReceiptDetails
 from saleapp import db
 from flask_login import current_user
+from sqlalchemy import func
 
 
 def load_category():
@@ -48,3 +49,29 @@ def save_receipt(cart):
             return False
         else:
             return True
+
+def count_product_by_cate():
+    return db.session.query(Category.id, Category.name, func.count(Product.id))\
+                            .join(Product, Product.category_id.__eq__(Category.id))\
+                            .group_by(Category.id).order_by(Category.id).all()
+
+def stats_revenue(kw=None, from_date=None, to_date=None):
+    query = db.session.query(Product.id, Product.name, func.sum(ReceiptDetails.quantity*ReceiptDetails.price))\
+                            .join(ReceiptDetails, ReceiptDetails.product_id.__eq__(Product.id))\
+                            .join(Receipt, ReceiptDetails.receipt_id.__eq__(Receipt.id))
+
+    if kw:
+        query = query.filter(Product.name.contains(kw))
+
+    if from_date:
+        query =  query.filter(Receipt.created_date.__ge__(from_date))
+
+    if to_date:
+        query = query.filter(Receipt.created_date.__le__(to_date))
+
+    return query.group_by(Product.id).all()
+
+if __name__ == "__main__":
+    from saleapp import app
+    with app.app_context():
+        print(stats_revenue('Galaxy'))
