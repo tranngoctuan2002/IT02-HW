@@ -161,5 +161,26 @@ def pay():
 
     return jsonify({'status': 200})
 
+@app.route('/api/product/<int:product_id>/comments')
+def comments(product_id):
+    data = []
+
+    for c in dao.load_comments(product_id):
+        data.append({
+            "id": c.id,
+            "content": c.content,
+            "created_date": c.created_date,
+            "user": {
+                "name": c.user.name,
+                "avatar": c.user.avatar
+            }
+        })
+
+    return jsonify(data)
+
+@app.route('/api/product/<int:product_id>/add_comments')
+def add_comments(product_id):
+    pass
+
 if __name__ == '__main__':
     app.run(debug=True)

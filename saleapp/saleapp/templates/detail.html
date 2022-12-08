@@ -5,15 +5,39 @@
 
 <div class="container" style="border:1px solid black;">
     <div class="row">
-    <div class="col-md-4 col-sm-6">
-        <img src="{{product.image}}" alt="{{product.name}}" class="img-fluid" style="padding:1rem">
+        <div class="col-md-4 col-sm-6">
+            <img src="{{product.image}}" alt="{{product.name}}" class="img-fluid" style="padding:1rem">
+        </div>
+        <div class="col-md-8 col-sm-6">
+            <h1>{{ product.name }}</h1>
+            <p>{{ product.description|safe }}</p>
+            <h3>{{ "{:,.1f}".format(product.price) }} VNĐ</h3>
+        </div>
     </div>
-    <div class="col-md-8 col-sm-6">
-        <h1>{{ product.name }}</h1>
-        <p>{{ product.description|safe }}</p>
-        <h3>{{ "{:,.1f}".format(product.price) }} VNĐ</h3>
+
+    <hr>
+    <div>
+        <div class="form-group">
+            <textarea class="form-control" id="comment-content" placeholder="Nội dung bình luận"></textarea>
+        </div>
+        <div class="mt-1">
+            <input type="button" onclick="addComment({{ product.id }})" value="Thêm bình luận" class="btn btn-info"/>
+        </div>
     </div>
+
+    <ul class="list-group mt-2" id="comments">
+
+    </ul>
 </div>
-</div>
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/details.js')}}"></script>
+<script>
+        window.onload = () => {
+            loadComments({{ product.id }})
+           }
+
+</script>
+{% endblock %}
 
 {% endblock %}

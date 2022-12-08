@@ -29,6 +29,7 @@ class Product(BaseModel):
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     tags = relationship('Tag', secondary='prod_tag', lazy='subquery', backref=backref('products', lazy=True))
     receipt_details = relationship("ReceiptDetails", backref='product', lazy=True)
+    comments = relationship("Comments", backref='product', lazy=True)
 
 class User(BaseModel, UserMixin):
     name = Column(String(50), nullable=False)
@@ -38,7 +39,7 @@ class User(BaseModel, UserMixin):
     active = Column(Boolean, default=True)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
     receipts = relationship("Receipt", backref='user', lazy=True)
-
+    comments = relationship("Comments", backref='user', lazy=True)
     def __str__(self):
         return self.name
 
@@ -62,6 +63,13 @@ class Tag(BaseModel):
 prod_tag = db.Table('prod_tag',
                     Column('product_id', ForeignKey(Product.id), nullable=False, primary_key=True),
                     Column('tag_id', ForeignKey(Tag.id), nullable=False, primary_key=True))
+
+class Comments(BaseModel):
+    content = Column(Text)
+    created_date = Column(DateTime, default=datetime.now())
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+
 
 if __name__ == "__main__":
     with app.app_context():
